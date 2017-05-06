@@ -7,6 +7,7 @@ import pandas as pd
 import json
 import unicodedata
 import re
+import os
 
 def getUnicoded(word):
         return unicodedata.normalize('NFKD', word).encode('ascii', 'ignore')
@@ -15,7 +16,7 @@ def getUnicoded(word):
 
 #Read json files
 business_data=[]
-with open("/soe/vajoshi/cmps-290/CMPS290C/data/Yelp/yelp_dataset_challenge_round9/yelp_academic_dataset_business.json") as data_file:
+with open(os.path.join("..", "data", "yelp_academic_dataset_business.json") as data_file:
     for new_line in data_file:
         business_data.append(json.loads(new_line))
         
@@ -35,7 +36,7 @@ print LV_business_data[0]
             
 LV_review_data=[]
 
-with open("/soe/vajoshi/cmps-290/CMPS290C/data/Yelp/yelp_dataset_challenge_round9/yelp_academic_dataset_review_small.json") as data_file:
+with open(os.path.join("..", "data", "yelp_academic_dataset_review_small.json") as data_file:
     for new_line in data_file:
 	if json.loads(new_line)[u'business_id'] in business_ids:
 		LV_review_data.append(json.loads(new_line))
@@ -73,7 +74,7 @@ print type(combined_dict[combined_dict.keys()[0]])
 
 print type(combined_dict[combined_dict.keys()[0]][1][1])
 
-with open("/soe/vajoshi/cmps-296/cmps-296/data/category_review.csv", 'w') as csv_file:
+with open(os.path.join("..", "data", "category_review.csv", 'w') as csv_file:
 	for business_id in combined_dict:
 		for review in combined_dict[business_id][1]:
 			text1 = re.sub('\n', ' ', getUnicoded(review))
@@ -150,20 +151,6 @@ def Word2Vector(categories,list_of_categories):
 
 categories_data=Word2Vector(categories,list_of_categories)
 #print categories_data
-with open("/soe/vajoshi/cmps-296/cmps-296/data/super_categories.json",'w') as datafile:
+with open(os.path.join("..", "data", "super_categories.json",'w') as datafile:
 	json.dump(categories_data, datafile, ensure_ascii=False)
-
-# In[141]:
-
-
-
-
-# In[142]:
-
-
-
-
-# In[ ]:
-
-
 
