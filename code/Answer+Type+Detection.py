@@ -5,7 +5,11 @@
 
 import pandas as pd
 import json
+import unicodedata
+import re
 
+def getUnicoded(word):
+        return unicodedata.normalize('NFKD', word).encode('ascii', 'ignore')
 
 # In[2]:
 
@@ -65,8 +69,18 @@ print combined_dict.keys()[0]
 #print combined_dict[combined_dict.keys()[0]]
 print type(combined_dict)
 print type(combined_dict[combined_dict.keys()[0]])
+print type(combined_dict[combined_dict.keys()[0]])
 
-print combined_dict[combined_dict.keys()[0]][1][0]
+print type(combined_dict[combined_dict.keys()[0]][1][1])
+
+with open("/soe/vajoshi/cmps-296/cmps-296/data/category_review.csv", 'w') as csv_file:
+	for business_id in combined_dict:
+		for review in combined_dict[business_id][1]:
+			text1 = re.sub('\n', ' ', getUnicoded(review))
+			text = re.sub(',', ' ', (text1))
+			csv_file.write(getUnicoded(';'.join(combined_dict[business_id][0])) + ',' + text + '\n')
+
+csv_file.close()
 
 
 
@@ -134,8 +148,10 @@ def Word2Vector(categories,list_of_categories):
 
 # In[177]:
 
-Word2Vector(categories,list_of_categories)
-
+categories_data=Word2Vector(categories,list_of_categories)
+#print categories_data
+with open("/soe/vajoshi/cmps-296/cmps-296/data/super_categories.json",'w') as datafile:
+	json.dump(categories_data, datafile, ensure_ascii=False)
 
 # In[141]:
 
