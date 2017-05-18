@@ -36,7 +36,7 @@ print LV_business_data[0]
             
 LV_review_data=[]
 
-with open(os.path.join("..", "data", "yelp_academic_dataset_review_small.json")) as data_file:
+with open(os.path.join("..", "data", "yelp_academic_dataset_review.json")) as data_file:
     for new_line in data_file:
 	if json.loads(new_line)[u'business_id'] in business_ids:
 		LV_review_data.append(json.loads(new_line))
@@ -74,18 +74,29 @@ print type(combined_dict[combined_dict.keys()[0]])
 
 print type(combined_dict[combined_dict.keys()[0]][1][1])
 
-with open(os.path.join("..", "data", "category_review.csv"), 'w') as csv_file:
-	for business_id in combined_dict:
-		for review in combined_dict[business_id][1]:
-			text1 = re.sub('\n', ' ', getUnicoded(review))
-			text = re.sub(',', ' ', (text1))
-			csv_file.write(getUnicoded(';'.join(combined_dict[business_id][0])) + ',' + text + '\n')
+# Call this function to create files for classification
+def write_in_csv(combined_dict):
+	with open(os.path.join("..", "data", "category_review.csv"), 'w') as csv_file:
+		for business_id in combined_dict:
+			for review in combined_dict[business_id][1]:
+				text1 = re.sub('\n', ' ', getUnicoded(review))
+				text = re.sub(',', ' ', (text1))
+				csv_file.write(getUnicoded(';'.join(combined_dict[business_id][0])) + ',' + text + '\n')
 
-csv_file.close()
+	csv_file.close()
+
+# Call this function to create text file for SIF
+def write_in_txt(combined_dict):
+	with open(os.path.join("..", "data", "category_review.txt"), 'w') as txt_file:
+                for business_id in combined_dict:
+                        for review in combined_dict[business_id][1]:
+                                text1 = re.sub('\n', ' ', getUnicoded(review))
+                                text = re.sub(',', ' ', (text1))
+                                txt_file.write(text + '\t' + getUnicoded(combined_dict[business_id][0][0]) '\n')	
 
 
 
-
+write_in_txt(combined_dict)
 # In[85]:
 
 categories=[]
