@@ -9,6 +9,27 @@ import unicodedata
 import re
 import os
 
+VARSHA = True
+
+if VARSHA:
+	DATA_PATH = os.path.join("/", "soe", "dhawal", "projects", "CMPS290C", "data", "Yelp", "yelp_dataset_challenge_round9")
+else:
+	DATA_PATH = os.path.join("..", "data")
+
+OUTPUT_DATA_PATH = os.path.join("..", "data")
+
+REVIEWS_FILE = os.path.join(DATA_PATH, "yelp_academic_dataset_review.json")
+USERS_FILE = os.path.join(DATA_PATH, "yelp_academic_dataset_user.json")
+BUSINESS_FILE = os.path.join(DATA_PATH, "yelp_academic_dataset_business.json")
+
+SUPER_CATEGORIES_FILE = os.path.join(OUTPUT_DATA_PATH, "super_categories.json")
+
+with open(SUPER_CATEGORIES_FILE) as sc:
+	for line in sc:
+		super_categories_dict = json.loads(line)
+
+super_categories = super_categories_dict.keys()
+
 def getUnicoded(word):
         return unicodedata.normalize('NFKD', word).encode('ascii', 'ignore')
 
@@ -16,7 +37,7 @@ def getUnicoded(word):
 
 #Read json files
 business_data=[]
-with open(os.path.join("..", "data", "yelp_academic_dataset_business_vegas.json")) as data_file:
+with open(BUSINESS_FILE) as data_file:
     for new_line in data_file:
         business_data.append(json.loads(new_line))
         
@@ -33,10 +54,10 @@ for i in range(len(business_data)):
             business_ids.append(business_data[i][u'business_id'])
 
 print LV_business_data[0] 
-            
+business_ids = business_ids[:1000]      
 LV_review_data=[]
 
-with open(os.path.join("..", "data", "yelp_academic_dataset_review.json")) as data_file:
+with open(REVIEWS_FILE) as data_file:
     for new_line in data_file:
 	if json.loads(new_line)[u'business_id'] in business_ids:
 		LV_review_data.append(json.loads(new_line))
@@ -92,13 +113,22 @@ def write_in_txt(combined_dict):
                         for review in combined_dict[business_id][1]:
                                 text1 = re.sub('\n', ' ', getUnicoded(review))
                                 text = re.sub(',', ' ', (text1))
-                                txt_file.write(text + '\t' + getUnicoded(combined_dict[business_id][0][0]) '\n')	
+				if combined_dict[business_id][0] is not None:
+					super_category_list = list(set(super_categories) & set(combined_dict[business_id][0]))
+					if len(super_category_list) > 0:
+						super_category = super_category_list[0]
+					else:
+						super_category = "other"
+				else:
+					super_category = "other"
+                                txt_file.write(text + '\t' + super_category + '\n')	
 
 
 
 write_in_txt(combined_dict)
 # In[85]:
 
+"""
 categories=[]
 for i in range(len(LV_business_data)):
     if LV_business_data[i][u'categories']!=None:   
@@ -163,5 +193,5 @@ def Word2Vector(categories,list_of_categories):
 categories_data=Word2Vector(categories,list_of_categories)
 #print categories_data
 with open(os.path.join("..", "data", "super_categories.json"),'w') as datafile:
-	json.dump(categories_data, datafile, ensure_ascii=False)
+	json.dump(categories_data, datafile, ensure_ascii=False)"""
 
