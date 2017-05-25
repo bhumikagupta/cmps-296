@@ -3,6 +3,7 @@ import json
 import tfidf
 import math
 from textblob import TextBlob as tb
+import sys
 
 BUSINESS_REVIEW_FILE = os.path.join('..', 'data', 'dict_business_id_reviews.json')
 
@@ -14,41 +15,9 @@ def get_business_reviews(business_ids):
             if data.keys()[0] in business_ids:
                 business_reviews[data.keys()[0]] = data[data.keys()[0]]
 
-    return business_reviews
+    return business_reviews   
 
-def tf(word, blob):
-    return blob.words.count(word) / len(blob.words)
-
-def n_containing(word, bloblist):
-    return sum(1 for blob in bloblist if word in blob.words)
-
-def idf(word, bloblist):
-    return math.log(len(bloblist) / (1 + n_containing(word, bloblist)))
-
-#def tfidf(word, blob, bloblist):
-#    return tf(word, blob) * idf(word, bloblist)
-
-
-def get_similarity(sentence, business_ids):
-    business_reviews_dict = get_business_reviews(business_ids)
-    
-    bloblist1 = []
-    
-    for business, values in business_reviews_dict.iteritems():
-        list_bus = []
-        for value in values:
-            list_bus.append(tb(value))
-        bloblist1.append(list_bus)
-    
-    for bloblist in bloblist1:
-        for i, blob in enumerate(bloblist):
-            print("Top words in document {}".format(i + 1))
-            scores = {word: tfidf(word, blob, bloblist) for word in blob.words}
-            sorted_words = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-            for word, score in sorted_words[:3]:
-                print("\tWord: {}, TF-IDF: {}".format(word, round(score, 5)))    
-
-def get_similarity_git(sentence, business_ids):
+def get_similarity_from_business(sentence, business_ids):
     business_reviews_dict = get_business_reviews(business_ids)
 
     # load data in tfdif
@@ -59,9 +28,53 @@ def get_similarity_git(sentence, business_ids):
     
     return table.similarities (sentence.split())
 
+def group_business_in_categories(businesses_list, categories):
+    '''
+    Input: list of businesses and list of categories
+    Output: [[businesses of category1]]
+    '''
+    business_acc_categories = []
+    for category in categories:
+        businesses_in_category = []
+        for business in businesses_list:
+            if category in business['categories']:
+                businesses_in_category.append(business)
+        business_acc_categories.append(businesses_in_category)
+
+    return business_acc_categories
+
+def get_similarity(sentence, businesses_list, categories):
+    '''
+    Input: Question, list of business dictionaries, categories of businesses sorted by stars
+    Output: sorted list of businesses according to similarity ratings
+    '''
+    business_acc_categories = group_business_in_categories(businesses_list, categories)
+    
+    max_business_category = []
+    max_average = -(sys.maxint)
+
+    for business_list in business_acc_categories:  
+
+        business_ids = [business['business_id'] for business in businesses_list]
+
+        businesses_similarity = get_similarity_from_business(sentence, business_ids)
+        businesses_similarity.sort(key=lambda x: x[1])
+
+        updated_business_list = []
+        for business_entry in businesses_similarity:
+            updated_business_list.append(business_list[business_ids.index(business_entry[0])])
+        
+        average_similarity = sum([sim[1] for sim in businesses_similarity])/ float(len(businesses_similarity))
+        if average_similarity > max_average:
+            max_average = average_similarity
+            max_business_category = updated_business_list
+        
+    return max_business_category
+
+
 sentence = 'place serve pizza'
 business_ids = ['f9sU31meK0bqAD7922sCog', '8cn8zqkyz-UpGKXcKeIRYA', 'hMh9XOwNQcu31NAOCqhAEw']
-similarity =  get_similarity_git(sentence, business_ids)
+similarity =  get_similarity_from_business(sentence, business_ids)
 similarity.sort(key=lambda x: x[1])
 print similarity[-1]
 print similarity[-2]

@@ -23,6 +23,7 @@ def create_business_review_file():
                 business_ids.append(business_id)
                 business_dict.clear()
                 business_dict[business_id] = [review['text']]
-            business_dict[business_id] += [review['text']]
+            if business_id in business_dict.keys():
+                business_dict[business_id] += [review['text']]
 
 create_business_review_file()
