@@ -22,11 +22,12 @@ def get_similarity_from_business(sentence, business_ids):
 
     # load data in tfdif
     table = tfidf.tfidf()
+    business_titles = []
     for business_id, reviews in business_reviews_dict.iteritems():
         for review in reviews:
-            table.addDocument(business_id, review.split())
+            table.addDocument(business_id,  review.split())
     
-    return table.similarities (sentence.split())
+    return table.similarities(sentence.split())
 
 def group_business_in_categories(businesses_list, categories):
     '''
@@ -50,33 +51,25 @@ def get_similarity(sentence, businesses_list, categories):
     '''
     business_acc_categories = group_business_in_categories(businesses_list, categories)
     
-    max_business_category = []
-    max_average = -(sys.maxint)
+    min_business_category = []
+    min_average = (sys.maxint)
 
-    for business_list in business_acc_categories:  
+    for business_list in business_acc_categories:
 
-        business_ids = [business['business_id'] for business in businesses_list]
+        business_ids = [business['business_id'] for business in business_list]
 
         businesses_similarity = get_similarity_from_business(sentence, business_ids)
         businesses_similarity.sort(key=lambda x: x[1])
 
-        updated_business_list = []
+        updated_business_dict = {}
         for business_entry in businesses_similarity:
-            updated_business_list.append(business_list[business_ids.index(business_entry[0])])
+            updated_business_dict[business_entry[0]] = (business_list[business_ids.index(business_entry[0])])
         
         average_similarity = sum([sim[1] for sim in businesses_similarity])/ float(len(businesses_similarity))
-        if average_similarity > max_average:
-            max_average = average_similarity
-            max_business_category = updated_business_list
+        if average_similarity < min_average:
+            min_average = average_similarity
+            min_business_category = updated_business_dict.values()
         
-    return max_business_category
+    return min_business_category
 
 
-sentence = 'place serve pizza'
-business_ids = ['f9sU31meK0bqAD7922sCog', '8cn8zqkyz-UpGKXcKeIRYA', 'hMh9XOwNQcu31NAOCqhAEw']
-similarity =  get_similarity_from_business(sentence, business_ids)
-similarity.sort(key=lambda x: x[1])
-print similarity[-1]
-print similarity[-2]
-print similarity[1]
-print similarity[0]
