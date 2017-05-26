@@ -6,16 +6,17 @@ from textblob import TextBlob as tb
 import sys
 
 BUSINESS_REVIEW_FILE = os.path.join('..', 'data', 'dict_business_id_reviews.json')
-
 def get_business_reviews(business_ids):
     business_reviews = {}
     with open(BUSINESS_REVIEW_FILE) as review_file:
         for line in review_file:
             data = json.loads(line)
-            if data.keys()[0] in business_ids:
-                business_reviews[data.keys()[0]] = data[data.keys()[0]]
+            businesses = data.keys()
+            for bus in businesses:
+                if bus in business_ids:
+                    business_reviews[bus] = data[bus]
 
-    return business_reviews   
+    return business_reviews
 
 def get_similarity_from_business(sentence, business_ids):
     business_reviews_dict = get_business_reviews(business_ids)
@@ -69,7 +70,9 @@ def get_similarity(sentence, businesses_list, categories):
         if average_similarity < min_average:
             min_average = average_similarity
             min_business_category = updated_business_dict.values()
-        
+
+    if len(min_business_category) == 0:
+        return businesses_list        
     return min_business_category
 
 
