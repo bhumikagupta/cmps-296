@@ -6,4 +6,5 @@ Following are the steps for the code to run :
 
 i) Clone the github.
 ii) Follow the instructions at https://github.com/brendano/stanford_corenlp_pywrapper to access stanford-corenlp-full-2016-10-31 and place it the package folder.
-iii) 
+iii) The data cannot be uploaded as per the policies of git. The code requires the yelp data for Las Vegas, a series of questions that are tagged with name, y/n, hours, stars and address for the classifier to learn. We made a dataset of about 300 questions with almost equal number of questions for each intent. Also, a pickel file is created for each intent. 
+iv) If the data is provided, run the script Final.py for the Bot to start answering.
