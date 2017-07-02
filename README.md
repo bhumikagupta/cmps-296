@@ -6,5 +6,5 @@ Following are the steps for the code to run :
 
 i) Clone the github.
 ii) Follow the instructions at https://github.com/brendano/stanford_corenlp_pywrapper to access stanford-corenlp-full-2016-10-31 and place it in the package folder.
-iii) The data for the program can be found on https://drive.google.com/open?id=0B4Jkiq5YTLXISjdMR1E4X1dGZ1k. Put all the files in a data folder.
+iii) The data for the program can be found on https://drive.google.com/open?id=0B4Jkiq5YTLXISjdMR1E4X1dGZ1k. Download the folder.
 iv) Run Final.py for the bot to start answering the questions.
