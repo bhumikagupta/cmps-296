@@ -5,5 +5,5 @@ to communicate about the actual destination like what are the popular restaurant
 Following are the steps for the code to run :
 
 i) Clone the github.
-ii) Follow the instructions at https://github.com/brendano/stanford_corenlp_pywrapper to access stanford-corenlp-full-2016-10-31
+ii) Follow the instructions at https://github.com/brendano/stanford_corenlp_pywrapper to access stanford-corenlp-full-2016-10-31 and place it the package folder.
 iii) 
